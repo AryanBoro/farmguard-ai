@@ -13,6 +13,8 @@
 
 ---
 
+<img src="assets/farmguard-ai ss.png" alt="FarmGuard AI Home Screen" width="800"/>
+
 ## 🎯 Overview
 
 FarmGuard AI is an **end-to-end crop health advisory platform** that leverages deep learning to provide farmers with immediate, actionable insights for plant disease diagnosis. By combining state-of-the-art computer vision with real-time environmental data, the system delivers comprehensive diagnostic reports with treatment recommendations and prevention strategies.
