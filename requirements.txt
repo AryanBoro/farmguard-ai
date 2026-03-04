@@ -1,13 +1,16 @@
-fastapi[standard]==0.129.0
+# FastAPI + ASGI
+fastapi[standard]==0.128.8
 uvicorn[standard]==0.30.6
 python-multipart==0.0.9
 httpx==0.27.2
-
-torch==2.2.0
-torchvision==0.17.0
-Pillow>=10.0.0
-numpy>=1.26.0
 pydantic>=2.0.0
 
-# Let pip also search PyTorch CPU wheels:
+# ML dependencies
+# Use PyTorch CPU wheels index
+torch>=2.2.0
+torchvision>=0.17.0
+Pillow>=10.0.0
+numpy>=1.26.0
+
+# Extra index for PyTorch CPU wheels
 --extra-index-url https://download.pytorch.org/whl/cpu
