@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import List, Optional
 from contextlib import contextmanager
 
-DB_PATH = "farmguard_history.db"
+DB_PATH = "/tmp/farmguard_history.db"
 
 
 @contextmanager
