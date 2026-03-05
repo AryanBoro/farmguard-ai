@@ -1,34 +1,139 @@
-<<<<<<< Updated upstream
----
-title: FarmGuard AI
-emoji: 🌾
-colorFrom: green
-colorTo: purple
-sdk: docker
-app_port: 7860
-pinned: false
-short_description: FastAPI 
-license: mit
-tags: ["fastapi", "docker", "crop disease", "ai", "api"]
----
-=======
-# 🌱 FarmGuard AI v2.0
+# 🌱 FarmGuard AI — Backend
 
-> Intelligent crop disease detection and advisory system — rebuilt from scratch with PyTorch + FastAPI.
+> Production-ready FastAPI backend for intelligent crop disease detection, powered by HuggingFace Transformers.
+
+![FarmGuard AI](https://img.shields.io/badge/FarmGuard-AI-green?style=for-the-badge)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=for-the-badge&logo=fastapi)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-EE4C2C?style=for-the-badge&logo=pytorch)
+![HuggingFace](https://img.shields.io/badge/HuggingFace-Transformers-FFD21E?style=for-the-badge)
 
 ---
 
-## What's New in v2.0
+## Overview
 
-| Feature | v1 (old) | v2 (this) |
+FarmGuard AI is a crop disease detection API that accepts leaf images and returns AI-powered disease diagnosis, treatment recommendations, weather risk assessment, and scan history analytics.
+
+**Live API:** `https://borreooo-farmguard-ai.hf.space`  
+**API Docs:** `https://borreooo-farmguard-ai.hf.space/docs`  
+**Frontend:** [farmguard-ai-frontend](https://github.com/AryanBoro/farmguard-ai-frontend)
+
+---
+
+## Features
+
+- 🔍 **Disease Detection** — 38 plant disease classes across 14 crops using MobileNetV2
+- 💊 **Remedy Database** — Full treatment advisory for every disease class
+- 🌤️ **Weather Risk** — Real-time weather-based disease risk scoring via OpenWeatherMap
+- 📊 **Scan History** — SQLite-backed scan history with trend analytics
+- ⚡ **Fast Inference** — HuggingFace Transformers pipeline, no local model file needed
+
+---
+
+## Supported Crops & Diseases
+
+| Crop | Diseases |
+|---|---|
+| Apple | Scab, Black Rot, Cedar Apple Rust |
+| Cherry | Powdery Mildew |
+| Corn | Gray Leaf Spot, Common Rust, Northern Leaf Blight |
+| Grape | Black Rot, Black Measles, Leaf Blight |
+| Orange | Citrus Greening |
+| Peach | Bacterial Spot |
+| Pepper | Bacterial Spot |
+| Potato | Early Blight, Late Blight |
+| Squash | Powdery Mildew |
+| Strawberry | Leaf Scorch |
+| Tomato | Bacterial Spot, Early Blight, Late Blight, Leaf Mold, Septoria Leaf Spot, Spider Mites, Target Spot, Yellow Leaf Curl Virus, Mosaic Virus |
+
+---
+
+## Tech Stack
+
+- **FastAPI** — REST API framework
+- **HuggingFace Transformers** — MobileNetV2 inference pipeline
+- **PyTorch** — Model backend
+- **SQLite** — Scan history persistence
+- **httpx** — Async weather API calls
+- **Docker** — Containerized deployment on HuggingFace Spaces
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description |
 |---|---|---|
-| ML Framework | TensorFlow/Keras `.hdf5` | **PyTorch EfficientNet-B4** |
-| Backend | Flask | **FastAPI** |
-| Confidence scores | Faked (`97.5% + boost`) | **Real softmax probabilities** |
-| Remedy database | 3 entries | **38 full entries** (all classes) |
-| Weather | Hardcoded Haryana | **Any location via API** |
-| Crop history | None | **SQLite with trend analytics** |
-| API | Basic | **Full REST with validation** |
+| GET | `/` | Health check |
+| GET | `/crops` | List supported crop types |
+| POST | `/predict` | Submit leaf image for diagnosis |
+| GET | `/history` | Get scan history |
+| GET | `/history/stats` | Dashboard summary stats |
+| GET | `/history/trends` | Daily disease trend data |
+| DELETE | `/history/{scan_id}` | Delete a scan record |
+
+### POST /predict
+
+```bash
+curl -X POST https://borreooo-farmguard-ai.hf.space/predict \
+  -F "file=@leaf.jpg" \
+  -F "crop_type=Tomato" \
+  -F "crop_age=45" \
+  -F "location=Punjab"
+```
+
+**Response:**
+```json
+{
+  "class_name": "Tomato___Early_blight",
+  "common_name": "Tomato Early Blight",
+  "confidence": 94.7,
+  "is_healthy": false,
+  "severity": "moderate",
+  "immediate_actions": ["..."],
+  "prevention": ["..."],
+  "organic_options": ["..."],
+  "weather_risk": { "level": "high", "score": 75 },
+  "growth_stage": "Vegetative Stage (Day 45)"
+}
+```
+
+---
+
+## Getting Started
+
+### 1. Clone the repo
+```bash
+git clone https://github.com/AryanBoro/farmguard-ai
+cd farmguard-ai
+```
+
+### 2. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Set environment variables
+Create a `.env` file:
+```
+WEATHER_API_KEY=your_openweathermap_key
+```
+
+### 4. Run locally
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+Open `http://localhost:8000/docs`
+
+---
+
+## Deployment
+
+Deployed on **HuggingFace Spaces** using Docker. Every push to `main` triggers an automatic redeploy.
+
+```
+Dockerfile → python:3.9-slim
+Port: 7860
+```
 
 ---
 
@@ -36,191 +141,24 @@ tags: ["fastapi", "docker", "crop disease", "ai", "api"]
 
 ```
 farmguard-ai/
-├── app/
-│   ├── main.py                 # FastAPI app + all routes
-│   ├── models/
-│   │   └── classifier.py       # EfficientNet-B4 model + inference wrapper
-│   ├── services/
-│   │   ├── weather.py          # WeatherAPI integration + risk assessment
-│   │   └── history.py          # SQLite crop history + analytics
-│   └── data/
-│       └── remedies.py         # Full remedy DB (38 disease classes)
-├── training/
-│   └── train.py                # Training script for PlantVillage dataset
+├── Dockerfile
 ├── requirements.txt
-└── README.md
+├── app/
+│   ├── main.py              # FastAPI app + all endpoints
+│   ├── models/
+│   │   └── classifier.py    # HuggingFace inference pipeline
+│   ├── services/
+│   │   ├── history.py       # SQLite scan history
+│   │   └── weather.py       # OpenWeatherMap integration
+│   └── data/
+│       └── remedies.py      # Disease remedy database (38 classes)
+└── training/
+    └── train.py             # EfficientNet-B4 training script (PlantVillage)
 ```
 
 ---
 
-## Quick Start
+## Related
 
-### 1. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 2. (Optional) Set environment variables
-
-```bash
-export WEATHER_API_KEY="your_key_from_weatherapi.com"
-export MODEL_PATH="/path/to/farmguard_best.pt"   # Leave unset to use ImageNet pretrained weights
-```
-
-### 3. Run the API
-
-```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-API docs available at: `http://localhost:8000/docs`
-
----
-
-## Training the Model
-
-### Get the dataset
-
-Download PlantVillage from Kaggle:
-```
-https://www.kaggle.com/datasets/emmarex/plantdisease
-```
-
-Expected structure:
-```
-PlantVillage/
-    Apple___Apple_scab/
-    Apple___Black_rot/
-    ... (38 class folders)
-```
-
-### Run training
-
-```bash
-# Basic training (30 epochs, GPU recommended)
-python training/train.py --data_dir /path/to/PlantVillage --epochs 30
-
-# With mixed precision (faster on RTX/A-series GPUs)
-python training/train.py --data_dir /path/to/PlantVillage --epochs 30 --amp
-
-# Full options
-python training/train.py \
-  --data_dir /path/to/PlantVillage \
-  --output_dir ./checkpoints \
-  --epochs 30 \
-  --batch_size 32 \
-  --lr 1e-3 \
-  --freeze_epochs 5 \
-  --amp
-```
-
-### Training Strategy
-
-Two-phase training:
-1. **Epochs 1–5 (head only):** Backbone frozen. Only the classification head trains. Fast convergence, prevents destroying pretrained features.
-2. **Epochs 6–30 (full fine-tune):** Full model unfreezes with differential learning rates — backbone at `lr × 0.1`, head at `lr`. Allows backbone to adapt to leaf texture features.
-
-**Expected results on PlantVillage:**
-- Validation accuracy: ~97–99%
-- Training time: ~2–4 hours on a single GPU (RTX 3080+)
-
-### After training
-
-```bash
-export MODEL_PATH="./checkpoints/farmguard_best.pt"
-uvicorn app.main:app --reload
-```
-
----
-
-## API Reference
-
-### `POST /predict`
-
-Main prediction endpoint.
-
-**Form fields:**
-| Field | Type | Required | Description |
-|---|---|---|---|
-| `file` | image | ✅ | Leaf image (JPEG/PNG/WebP, max 10MB) |
-| `crop_type` | string | ❌ | e.g. `"Tomato"` — filters predictions to this crop |
-| `crop_age` | int | ❌ | Days since planting (used for growth stage) |
-| `location` | string | ❌ | City/region for weather risk assessment |
-| `notes` | string | ❌ | Field notes saved with history entry |
-| `save_history` | bool | ❌ | Default `true` — saves scan to history |
-
-**Response:**
-```json
-{
-  "scan_id": 42,
-  "class_name": "Tomato___Early_blight",
-  "common_name": "Tomato Early Blight",
-  "confidence": 94.7,
-  "is_healthy": false,
-  "alternatives": [
-    { "class_name": "Tomato___Target_Spot", "confidence": 3.2 },
-    { "class_name": "Tomato___Septoria_leaf_spot", "confidence": 1.1 }
-  ],
-  "pathogen": "Alternaria solani (fungus)",
-  "severity": "moderate",
-  "severity_color": "#f59e0b",
-  "description": "...",
-  "immediate_actions": ["..."],
-  "prevention": ["..."],
-  "organic_options": ["..."],
-  "growth_stage": "Vegetative Stage (Day 45)",
-  "weather": {
-    "location": "Ludhiana, India",
-    "temp_c": 27,
-    "humidity": 78,
-    "precip_mm": 0,
-    "condition": "Partly cloudy"
-  },
-  "weather_risk": {
-    "level": "moderate",
-    "score": 55,
-    "message": "🟡 Weather conditions present moderate disease risk.",
-    "factors": ["High humidity (78%) favors pathogen spread"]
-  }
-}
-```
-
-### `GET /history`
-
-Query params: `limit`, `crop_type`, `only_diseases`
-
-### `GET /history/trends`
-
-Query params: `days` (default 30), `crop_type`
-
-### `GET /history/stats`
-
-Returns dashboard summary: total scans, disease rate, top diseases.
-
-### `GET /crops`
-
-Returns list of supported crop types.
-
----
-
-## Environment Variables
-
-| Variable | Default | Description |
-|---|---|---|
-| `WEATHER_API_KEY` | (empty) | From [weatherapi.com](https://weatherapi.com) — free tier works |
-| `MODEL_PATH` | `None` | Path to `farmguard_best.pt`. If unset, uses ImageNet pretrained weights (lower accuracy until fine-tuned) |
-
----
-
-## Frontend Integration (Lovable)
-
-The API is fully CORS-enabled. Key endpoint for the frontend:
-
-```
-POST http://localhost:8000/predict
-Content-Type: multipart/form-data
-```
-
-All responses are JSON. The `severity_color` field provides hex color codes ready for UI use.
->>>>>>> Stashed changes
+- 🎨 **Frontend repo:** [farmguard-ai-frontend](https://github.com/AryanBoro/farmguard-ai-frontend)
+- 🤗 **Live Space:** [borreooo/farmguard-ai](https://huggingface.co/spaces/borreooo/farmguard-ai)
